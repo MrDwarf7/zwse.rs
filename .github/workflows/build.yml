@@ -15,7 +15,7 @@ env:
   RUST_BACKTRACE: 1
   SCCACHE_GHA_ENABLED: true
   RUSTC_WRAPPER: sccache
-  PROJECT_NAME: zen_workspace_extr_rs
+  PROJECT_NAME: zwse
 
 jobs:
   check:
@@ -47,6 +47,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     if: ${{ !contains(github.event.head_commit.message, 'skip ci') }}
     steps:
+      - uses: actions/checkout@v7
+
       - uses: ./.github/actions/setup-rust
         with:
           target: ${{ matrix.target }}
@@ -59,13 +61,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        - os: ubuntu-latest
-          target: x86_64-unknown-linux-gnu
-        - os: windows-latest
-          target: x86_64-pc-windows-msvc
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
     runs-on: ${{ matrix.os }}
     if: ${{ !contains(github.event.head_commit.message, 'skip ci') }}
     steps:
+      - uses: actions/checkout@v7
+
       - uses: ./.github/actions/setup-rust
         with:
           target: ${{ matrix.target }}
@@ -74,6 +79,10 @@ jobs:
         run: cargo fmt --all --check
 
       - name: Run Clippy with pedantic
+        run: cargo clippy --all-targets --all-features --locked -- -W clippy::pedantic
+
+      - name: Build project
+        run: cargo build --release --locked --all
         run: cargo clippy --all-targets --all-features --locked -- -W clippy::pedantic
 
       - name: Build project

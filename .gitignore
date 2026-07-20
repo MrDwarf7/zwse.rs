@@ -9,6 +9,10 @@ _*/**/*
 .bak/*
 .bak/**/*
 
+.extras/
+.extras/*
+.extras/**/*
+
 debug/
 target/
 *config.to*
@@ -20,7 +24,7 @@ data/*.xlsx
 data/*.xlsm
 data/*
 !data/.gitkeep
-*_dist/
+_*_dist/
 
 #
 scratch/*
@@ -31,7 +35,7 @@ env*
 *env*
 *.env*
 
-# Remove Cargo.lock from gitignore if creating a library; keep it for binaries
+# Remove Cargo.lock from gitignore if creating an executable, leave it for libraries
 # More information here https://doc.rust-lang.org/cargo/guide/cargo-toml-vs-cargo-lock.html
 # Cargo.lock
 
@@ -44,14 +48,3 @@ env*
 .idea/
 .idea/*
 .idea/**/*
-
-# Local dumps / session fixtures (may contain browsing history, cookies, URLs)
-current_win.txt
-dump.txt
-*.jsonlz4
-sessionstore*
-workspace_export*.txt
-*_good.*
-*_operations.*
-.extras/
-./.extras/

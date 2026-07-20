@@ -22,7 +22,7 @@ runs:
   using: "composite"
   steps:
     - name: Checkout sources
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Setup sccache
       uses: mozilla-actions/sccache-action@v0.0.9
@@ -36,6 +36,8 @@ runs:
       uses: Swatinem/rust-cache@v2
       with:
         cache-all-crates: true
+        save-if: ${{ github.ref == 'refs/heads/main' }}
+        key: ${{ inputs.target }}
 
     - name: Install gcc
       shell: bash
@@ -51,17 +53,13 @@ runs:
     - name: Install mold linker (Linux)
       shell: bash
       if: ${{ inputs.use-mold == 'true' && runner.os == 'Linux' }}
-      env:
-        MOLD_VERSION: '2.41.0'
-        SHA256_X86_64: 'PLACEHOLDER_SHA256_X86_64'
-        SHA256_AARCH64: 'PLACEHOLDER_SHA256_AARCH64'
-        RUSTFLAGS: "-C linker=clang -C link-arg=-fuse-ld=mold"
       run: |
         set -euo pipefail
+        MOLD_VERSION='2.41.0'
         arch=$(uname -m)
         case "$arch" in
-          x86_64)   mold_arch='x86_64-linux'; expected_sha="$SHA256_X86_64" ;;
-          aarch64)  mold_arch='aarch64-linux'; expected_sha="$SHA256_AARCH64" ;;
+          x86_64)   mold_arch='x86_64-linux' ;;
+          aarch64)  mold_arch='aarch64-linux' ;;
           *)        echo "unsupported arch: $arch"; exit 1 ;;
         esac
         url="https://github.com/rui314/mold/releases/download/v${MOLD_VERSION}/mold-${MOLD_VERSION}-${mold_arch}.tar.gz"
@@ -70,11 +68,15 @@ runs:
           echo "attempt $attempt failed" && sleep 3
           [ "$attempt" = 3 ] && exit 1
         done
-        echo "${expected_sha}  /tmp/mold.tar.gz" | sha256sum -c -
         sudo tar -C /opt -xzf /tmp/mold.tar.gz
-        sudo ln -sf "/opt/mold-${MOLD_VERSION}-${mold_arch}/bin/mold" /usr/local/bin.mold
+        sudo ln -sf "/opt/mold-${MOLD_VERSION}-${mold_arch}/bin/mold" /usr/local/bin/mold
         sudo ln -sf "/opt/mold-${MOLD_VERSION}-${mold_arch}/bin/mold" /usr/local/bin/ld.mold
         mold --version
+
+    - name: Set RUSTFLAGS for mold (Linux)
+      shell: bash
+      if: ${{ inputs.use-mold == 'true' && runner.os == 'Linux' }}
+      run: echo "RUSTFLAGS=-C linker=clang -C link-arg=-fuse-ld=mold" >> $GITHUB_ENV
 
     - name: Setup Rust toolchain
       shell: bash

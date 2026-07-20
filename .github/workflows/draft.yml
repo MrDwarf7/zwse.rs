@@ -21,7 +21,7 @@ env:
   RUST_BACKTRACE: 1
   SCCACHE_GHA_ENABLED: true
   RUSTC_WRAPPER: sccache
-  PROJECT_NAME: zen_workspace_extr_rs
+  PROJECT_NAME: zwse
 
 jobs:
   build-unix:
@@ -109,7 +109,7 @@ jobs:
           merge-multiple: true
 
       - name: Draft
-        uses: softprops/action-gh-release@master
+        uses: softprops/action-gh-release@v2
         with:
           fail_on_unmatched_files: true
           draft: true

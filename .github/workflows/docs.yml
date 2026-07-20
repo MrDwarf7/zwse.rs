@@ -15,7 +15,7 @@ env:
   RUST_BACKTRACE: 1
   SCCACHE_GHA_ENABLED: true
   RUSTC_WRAPPER: sccache
-  PROJECT_NAME: zen_workspace_extr_rs
+  PROJECT_NAME: zwse
 
 jobs:
   docs:
@@ -23,12 +23,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        - os: ubuntu-latest
-          target: x86_64-unknown-linux-gnu
-        - os: windows-latest
-          target: x86_64-pc-windows-msvc
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
     runs-on: ${{ matrix.os }}
     steps:
+      - uses: actions/checkout@v7
+
       - uses: ./.github/actions/setup-rust
         with:
           target: ${{ matrix.target }}
@@ -43,10 +46,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        - os: ubuntu-latest
-          target: x86_64-unknown-linux-gnu
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
     runs-on: ${{ matrix.os }}
     steps:
+      - uses: actions/checkout@v7
+
       - uses: ./.github/actions/setup-rust
         with:
           target: ${{ matrix.target }}
@@ -54,7 +60,7 @@ jobs:
       - name: Run Cargo Doc generation
         env:
           RUSTDOCFLAGS: "-D warnings"
-        run: cargo doc --no-deps --all-features --all --locked --target ${{ matrix.target }} --document-private-items
+        run: cargo doc --no-deps --all-features --all --locked --target ${{ matrix.target }} --document-private items
 
       - name: Ensure Zip Installed on Unix
         run: |
@@ -77,10 +83,13 @@ jobs:
     name: "Docs - package-docs-windows"
     strategy:
       matrix:
-        - os: windows-latest
-          target: x86_64-pc-windows-msvc
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
     runs-on: ${{ matrix.os }}
     steps:
+      - uses: actions/checkout@v7
+
       - uses: ./.github/actions/setup-rust
         with:
           target: ${{ matrix.target }}
@@ -94,7 +103,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PROJECT_NAME }}-${{ matrix.target }}-docs.zip
-          path: target\\${{ matrix.target }}\\doc\\
+          path: target\\\\${{ matrix.target }}\\doc\\\\
           if-no-files-found: 'error'
           compression-level: '9'
           overwrite: 'true'
@@ -114,7 +123,7 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
 
       - name: Checkout sources
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -136,6 +145,7 @@ jobs:
           echo "tree from single dot"
           tree -afh .
           echo \n\n
+
           echo "tree from github workspace call"
           tree -afh ${{ github.workspace }}
 
