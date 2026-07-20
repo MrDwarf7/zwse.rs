@@ -1,0 +1,39 @@
+name: "Test"
+on:
+  push:
+    branches:
+      - master
+      - main
+      - develop
+      - dev
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+  RUST_BACKTRACE: 1
+  SCCACHE_GHA_ENABLED: true
+  RUSTC_WRAPPER: sccache
+  PROJECT_NAME: zen_workspace_extr_rs
+
+jobs:
+  test:
+    name: "Test - ${{ matrix.target }}"
+    strategy:
+      matrix:
+        - os: ubuntu-latest
+          target: x86_64-unknown-linux-gnu
+        - os: windows-latest
+          target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.os }}
+    if: ${{ !contains(github.event.head_commit.message, 'skip ci') }}
+    steps:
+      - uses: ./.github/actions/setup-rust
+        with:
+          target: ${{ matrix.target }}
+
+      - name: Run Cargo test
+        run: cargo test --all --locked --target ${{ matrix.target }}
