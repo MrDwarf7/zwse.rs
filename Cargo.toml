@@ -1,0 +1,146 @@
+cargo-features = [ "codegen-backend", "trim-paths" ]
+# cargo-features = [ "codegen-backend", "profile-rustflags", "trim-paths" ]
+# cargo-features = ["profile-rustflags", "trim-paths"] # required for both trimming paths and setting rustflags
+# The above also needs the profile.dev to be uncommented to use the cranelift backend
+[package]
+name        = "zen_workspace_extr_rs"
+version     = "0.1.0"
+authors     = [ "MrDwarf7", "Blake B. <github.com/MrDwarf7>" ]
+edition     = "2024"
+description = "Export tabs and workspaces from a Zen Browser sessionstore.jsonlz4"
+# license = "MIT"
+license-file = "LICENSE"
+readme       = "README.md"
+# For running the main server as a watch, call
+# cargo watch -q -c -w src/ -x run
+
+######################################################################################################################################################
+######################################################################################################################################################
+
+[features]
+default = [ "macros" ]
+macros  = [  ]
+# debug   = [  ]
+
+
+# [package.metadata.winresource]
+# OriginalFilename = "zen_workspace_extr_rs.exe"
+# FileDescription = "Export tabs and workspaces from a Zen Browser sessionstore.jsonlz4"
+# LegalCopyright = "Copyright © 2025 by Blake B. @github.com/MrDwarf7"
+# #CompanyName = "https://github.com/MrDwarf7"
+#
+# [target.'cfg(windows)'.build-dependencies]
+# windres = "0.2"
+#
+# [build-dependencies]
+# winresource = "0.1.19"
+# windres = "0.2.2"
+# winapi = { version = "0.3.9" }
+
+######################################################################################################################################################
+######################################################################################################################################################
+
+
+[dependencies]
+lz4_flex   = "0.11.3"
+dirs       = "6.0.0"
+serde      = { version = "*", features = [ "derive" ] }
+serde_json = "*"
+thiserror  = "*"
+clap       = { version = "*", features = [ "derive", "cargo", "color" ] } # Optionally: "env"
+anstyle    = "*"
+# eyre = "*"
+# dotenvy = "*"
+# futures = "*"
+
+# Base dependencies/Commons
+# reqwest = { version = "*", features = ["cookies", "json", "multipart", "stream"] }
+# uuid = { version = "*", features = ["v4"] }
+# tokio = { version = "*", features = ["full", "tracing"] }
+
+# Logging and tracing
+# tracing = "*"
+# tracing-subscriber = { version = "*", features = [
+#     "ansi",
+#     "chrono",
+#     "env-filter",
+#     "serde",
+#     "std",
+# ] }
+
+
+# Extra stuff
+# tokio-util = { version = "*", features = ["codec"] }
+# toml = "*"
+# log = "*"
+
+# Utilities
+# async-trait = "*"
+# static-toml = "*"
+# walkdir = "*"
+# chrono = "*"
+# itertools = "*"
+# tabwriter = "*" # TODO: prettier export tables
+
+######################################################################################################################################################
+######################################################################################################################################################
+
+
+## See `./.extras/.cargo_options.toml` for options & brief details & directions
+
+[profile.dev]
+opt-level        = 1
+codegen-units    = 256
+incremental      = true
+codegen-backend  = "cranelift"
+debug            = "line-tables-only"
+debug-assertions = true
+overflow-checks  = true
+strip            = "none"             # true | false | "none" | "symbols" | "debuginfo" ## Leave off @ w. THIS IS NOT OBFUSCATION.
+panic            = "abort"            # "unwind" | "abort"
+lto              = "off"              # "false" ### # true | false | "off" | "thin" | "fat" ## Can't use with cranelift yet
+trim-paths       = "none"
+# rustflags        = ["-Zthreads=16"]
+# tune-cpu         = "native"
+
+######################################################################################################################################################
+
+[profile.release]
+opt-level        = 3
+codegen-units    = 1
+incremental      = false
+codegen-backend  = "cranelift"                 # May break deps.
+debug            = "none"
+debug-assertions = false
+overflow-checks  = false                       # debatable
+strip            = "symbols"                   # true | false | "none" | "symbols" | "debuginfo" ## Leave off @ w. THIS IS NOT OBFUSCATION.
+panic            = "unwind"
+lto              = "off"                       # true | false | "off" | "thin" | "fat" ## Can't use with cranelift yet
+trim-paths       = [ "diagnostics", "object" ]
+# rustflags        = ["-Zthreads=16"]
+# tune-cpu         = "native"
+
+
+[profile.dev.package."*"]
+inherits        = "release"
+codegen-backend = "cranelift" #### May break deps. for external crates
+
+[profile.release.package."*"]
+inherits        = "release"
+codegen-backend = "cranelift" #### May break deps. for external crates??????
+
+######################################################################################################################################################
+######################################################################################################################################################
+
+# Lint levels / priorities/priority
+# 0 = forbid
+# 1 = deny
+# 2 = warn
+# 3 = allow
+[lints.rust]
+# WARN until JsonBufPtr / sorting unsafe is stripped. Flip to forbid after that cleanup.
+unsafe_code = { level = "warn", priority = 1 }
+# unsafe_code = { level = "forbid", priority = 0 }
+
+[lints.clippy]
+enum_glob_use = { level = "warn", priority = 2 }
