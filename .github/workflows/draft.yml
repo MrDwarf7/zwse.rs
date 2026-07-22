@@ -28,10 +28,13 @@ jobs:
     name: "Draft - build-unix"
     strategy:
       matrix:
-        - os: ubuntu-latest
-          target: x86_64-unknown-linux-gnu
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
     runs-on: ${{ matrix.os }}
     steps:
+      - uses: actions/checkout@v7
+
       - uses: ./.github/actions/setup-rust
         with:
           target: ${{ matrix.target }}
@@ -61,10 +64,13 @@ jobs:
     name: "Draft - build-windows"
     strategy:
       matrix:
-        - os: windows-latest
-          target: x86_64-pc-windows-msvc
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
     runs-on: ${{ matrix.os }}
     steps:
+      - uses: actions/checkout@v7
+
       - uses: ./.github/actions/setup-rust
         with:
           target: ${{ matrix.target }}
@@ -100,7 +106,7 @@ jobs:
     needs: [build-unix, build-windows]
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -133,7 +139,7 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
 
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
