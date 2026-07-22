@@ -1,40 +1,33 @@
 name: "Publish"
+# Promotes the draft release created by Draft on the same tag push.
+# Logic lives in .github/scripts/promote-draft-release.sh (editor-friendly).
 on:
   push:
     tags: ["v[0-9]+.[0-9]+.[0-9]?"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to publish (e.g. v0.1.0). Defaults to the ref name on tag push."
+        required: false
+        default: ""
+
+permissions:
+  contents: write
 
 env:
-  preview: "${{ github.event_name == 'release' && contains(github.event.release.tag_name, 'preview') }}"
   PROJECT_NAME: "zwse"
 
 jobs:
   publish:
-    name: "Publish - publish"
-    strategy:
-      matrix:
-        include:
-          - os: "ubuntu-latest"
-            target: "x86_64-unknown-linux-gnu"
-    runs-on: "${{ matrix.os }}"
+    name: "Publish - promote draft"
+    runs-on: "ubuntu-latest"
     steps:
       - name: "Checkout sources"
         uses: "actions/checkout@v7"
 
-      - name: "Download artifacts"
-        uses: "actions/download-artifact@v8"
-        with:
-          merge-multiple: true
-
-      - name: "Echo Tag Ref(s)"
-        run: |
-          echo "Tag name for GITHUB_REF_NAME: $GITHUB_REF_NAME"
-          echo "Tag name from github.ref_name ${{ github.ref_name }}"
-
-      - name: "Upload Release Assets"
-        uses: "svenstaro/upload-release-action@v2"
-        if: env.preview == 'false'
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          file: "${{ env.PROJECT_NAME }}-*.zip"
-          file_glob: true
-          overwrite: true
+      - name: "Promote draft release"
+        env:
+          GH_TOKEN: "${{ github.token }}"
+          INPUT_TAG: "${{ inputs.tag }}"
+        shell: "bash"
+        run: "bash .github/scripts/promote-draft-release.sh"
