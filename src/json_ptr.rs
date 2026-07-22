@@ -6,7 +6,7 @@ use std::{fs, slice};
 use lz4_flex::decompress;
 
 use crate::MAGIC_HEADER;
-use crate::prelude::*;
+use crate::error::{Error, Result};
 
 pub trait FillBuf<T, N> {
     fn fill_buf(&mut self, data: T) -> Self;

@@ -13,9 +13,13 @@ license-file = "LICENSE"
 readme       = "README.md"
 build        = "build.rs"
 
+[lib]
+name = "zwse"
+path = "src/lib.rs"
+
 [[bin]]
 name = "zwse"
-# Binary path defaults to src/main.rs
+path = "src/main.rs"
 # For running the main server as a watch, call
 # cargo watch -q -c -w src/ -x run
 
@@ -49,6 +53,9 @@ serde_json = "*"
 thiserror  = "*"
 clap       = { version = "*", features = [ "derive", "cargo", "color" ] } # Optionally: "env"
 anstyle    = "*"
+
+[dev-dependencies]
+tempfile = "3"
 # eyre = "*"
 # dotenvy = "*"
 # futures = "*"

@@ -3,7 +3,7 @@ use std::str::FromStr;
 
 use clap::{Parser, ValueEnum};
 
-use crate::prelude::*;
+use crate::error::{Error, Result};
 
 /// Default export path relative to the process cwd.
 pub const DEFAULT_OUTPUT: &str = "data/workspace_export_rs.txt";
@@ -316,4 +316,41 @@ pub fn get_styles() -> clap::builder::Styles {
                 .fg_color(Some(anstyle::Color::Ansi(anstyle::AnsiColor::Cyan))),
         )
         .placeholder(anstyle::Style::new().fg_color(Some(anstyle::Color::Ansi(anstyle::AnsiColor::White))))
+}
+
+#[cfg(test)]
+mod tests {
+    use std::str::FromStr;
+
+    use super::*;
+
+    #[test]
+    fn path_set_rejects_auto_and_empty() {
+        assert!(!path_set(Path::new(PATH_AUTO)));
+        assert!(!path_set(Path::new("")));
+        assert!(path_set(Path::new("/tmp/sessionstore.jsonlz4")));
+    }
+
+    #[test]
+    fn resolve_session_file_uses_explicit_input() {
+        let cli = Cli {
+            input: PathBuf::from("tests/fixtures/minimal.jsonlz4"),
+            ..Default::default()
+        };
+        let p = cli.resolve_session_file().expect("resolve");
+        assert_eq!(p, PathBuf::from("tests/fixtures/minimal.jsonlz4"));
+    }
+
+    #[test]
+    fn verbosity_from_str_and_rank() {
+        assert_eq!(<VerbosityLevel as FromStr>::from_str("debug").unwrap(), VerbosityLevel::Debug);
+        assert_eq!(VerbosityLevel::from(3u8), VerbosityLevel::Debug);
+        assert!(VerbosityLevel::Debug.at_least(VerbosityLevel::Info));
+        assert!(!VerbosityLevel::Warn.at_least(VerbosityLevel::Info));
+    }
+
+    #[test]
+    fn verbosity_from_str_rejects_garbage() {
+        assert!(<VerbosityLevel as FromStr>::from_str("loud").is_err());
+    }
 }

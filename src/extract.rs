@@ -36,8 +36,9 @@ impl Ord for ExtractedData {
 }
 
 impl ExtractedData {
-    pub fn extract_fields(tab: &serde_json::Value, // serde_json::map::Map<String, Value>
-    ) -> crate::Result<Self> {
+    pub fn extract_fields(
+        tab: &serde_json::Value, // serde_json::map::Map<String, Value>
+    ) -> crate::error::Result<Self> {
         let mut s = ExtractedData::default();
 
         for key in tab.as_object().unwrap().keys() {
@@ -87,5 +88,54 @@ fn maybe_empty_string(value: &str) -> String {
                 false => "".to_string(),
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use serde_json::json;
+
+    use super::*;
+
+    #[test]
+    fn extract_fields_from_entry_object() {
+        let tab = json!({
+            "id": 42,
+            "url": "https://example.com/",
+            "title": "Example",
+            "workspace": null,
+            "pinned": false,
+            "pinned_id": null,
+            "last_accessed": 1234567890
+        });
+        let row = ExtractedData::extract_fields(&tab).expect("extract");
+        assert_eq!(row.id, 42);
+        // serde_json Value::to_string quotes strings
+        assert!(row.url.contains("example.com"), "url={}", row.url);
+        assert!(row.title.contains("Example"), "title={}", row.title);
+        assert!(!row.pinned);
+        assert_eq!(row.last_accessed, 1234567890);
+        assert_eq!(row.workspace, "");
+        assert_eq!(row.pinned_id, "");
+    }
+
+    #[test]
+    fn set_field_null_workspace_becomes_empty() {
+        let mut s = ExtractedData::default();
+        s.set_field("workspace", "null".into());
+        assert_eq!(s.workspace, "");
+    }
+
+    #[test]
+    fn ord_by_id() {
+        let a = ExtractedData {
+            id: 1,
+            ..Default::default()
+        };
+        let b = ExtractedData {
+            id: 2,
+            ..Default::default()
+        };
+        assert!(a < b);
     }
 }
