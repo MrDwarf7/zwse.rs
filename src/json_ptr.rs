@@ -55,11 +55,11 @@ impl JsonBufPtr {
         println!("Peeking into buffer - char length is not zero");
 
         let len = std::cmp::min(char_len, self.size);
-        // Safety: data_ptr is not null and size is not zero
-        unsafe {
-            let slice = slice::from_raw_parts(self.data_ptr, len);
-            Ok(slice)
-        }
+        // Safety: data_ptr is not null (checked above) and len <= size.
+        #[allow(unsafe_code)]
+        // SAFETY: pointer non-null and length bounded by allocation size.
+        let slice = unsafe { slice::from_raw_parts(self.data_ptr, len) };
+        Ok(slice)
     }
 }
 

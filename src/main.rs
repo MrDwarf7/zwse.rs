@@ -71,10 +71,10 @@ fn main() -> Result<()> {
     // radix_sort_avx(&mut entries);
 
     let output_file = cli.output_path();
-    if let Some(parent) = output_file.parent() {
-        if !parent.as_os_str().is_empty() {
-            std::fs::create_dir_all(parent).map_err(Error::IoError)?;
-        }
+    if let Some(parent) = output_file.parent()
+        && !parent.as_os_str().is_empty()
+    {
+        std::fs::create_dir_all(parent).map_err(Error::IoError)?;
     }
 
     let entries_len = t; // outer loop count, not k (entries-in-tab)
