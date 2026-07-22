@@ -83,7 +83,3 @@ jobs:
 
       - name: Build project
         run: cargo build --release --locked --all
-        run: cargo clippy --all-targets --all-features --locked -- -W clippy::pedantic
-
-      - name: Build project
-        run: cargo build --release --locked --all

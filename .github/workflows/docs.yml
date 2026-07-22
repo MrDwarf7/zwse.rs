@@ -60,7 +60,7 @@ jobs:
       - name: Run Cargo Doc generation
         env:
           RUSTDOCFLAGS: "-D warnings"
-        run: cargo doc --no-deps --all-features --all --locked --target ${{ matrix.target }} --document-private items
+        run: cargo doc --no-deps --all-features --all --locked --target ${{ matrix.target }} --document-private-items
 
       - name: Ensure Zip Installed on Unix
         run: |
@@ -103,7 +103,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PROJECT_NAME }}-${{ matrix.target }}-docs.zip
-          path: target\\\\${{ matrix.target }}\\doc\\\\
+          path: target\\${{ matrix.target }}\\doc\\
           if-no-files-found: 'error'
           compression-level: '9'
           overwrite: 'true'
