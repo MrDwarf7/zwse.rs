@@ -36,8 +36,7 @@ impl Ord for ExtractedData {
 }
 
 impl ExtractedData {
-    pub fn extract_fields(
-        tab: &serde_json::Value, // serde_json::map::Map<String, Value>
+    pub fn extract_fields(tab: &serde_json::Value, // serde_json::map::Map<String, Value>
     ) -> crate::Result<Self> {
         let mut s = ExtractedData::default();
 

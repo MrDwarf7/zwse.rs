@@ -134,12 +134,12 @@ impl Cli {
 impl Default for Cli {
     fn default() -> Self {
         Self {
-            input: PathBuf::from(PATH_AUTO),
-            profile: PathBuf::from(PATH_AUTO),
-            session_name: DEFAULT_SESSION_NAME.to_string(),
-            output: PathBuf::from(DEFAULT_OUTPUT),
+            input:           PathBuf::from(PATH_AUTO),
+            profile:         PathBuf::from(PATH_AUTO),
+            session_name:    DEFAULT_SESSION_NAME.to_string(),
+            output:          PathBuf::from(DEFAULT_OUTPUT),
             level_verbosity: VerbosityLevel::Info,
-            version: false,
+            version:         false,
         }
     }
 }
@@ -153,9 +153,7 @@ fn path_set(p: &Path) -> bool {
 
 /// First directory under the OS-specific Zen Profiles root.
 pub fn discover_zen_profile() -> Result<PathBuf> {
-    let home = dirs::home_dir().ok_or_else(|| {
-        Error::Generic("Could not determine home directory".to_string())
-    })?;
+    let home = dirs::home_dir().ok_or_else(|| Error::Generic("Could not determine home directory".to_string()))?;
 
     // Zen has used both `.../zen/Profiles/<id>` and `.../zen/<id>` layouts.
     let candidates: Vec<PathBuf> = match std::env::consts::OS {
@@ -168,10 +166,7 @@ pub fn discover_zen_profile() -> Result<PathBuf> {
             vec![base.join("Profiles"), base]
         }
         "macos" => {
-            let base = home
-                .join("Library")
-                .join("Application Support")
-                .join("zen");
+            let base = home.join("Library").join("Application Support").join("zen");
             vec![base.join("Profiles"), base]
         }
         _ => return Err(Error::Generic("Unsupported OS".to_string())),
@@ -220,10 +215,7 @@ pub fn discover_zen_profile() -> Result<PathBuf> {
         }
     }
 
-    Err(Error::ProfileDirNotFound(format!(
-        "tried: {}",
-        tried.join(", ")
-    )))
+    Err(Error::ProfileDirNotFound(format!("tried: {}", tried.join(", "))))
 }
 
 /// Diagnostic verbosity. Defaults via clap -- no Option wrapping.
@@ -306,10 +298,7 @@ pub fn get_styles() -> clap::builder::Styles {
                 .underline()
                 .fg_color(Some(anstyle::Color::Ansi(anstyle::AnsiColor::Blue))),
         )
-        .literal(
-            anstyle::Style::new()
-                .fg_color(Some(anstyle::Color::Ansi(anstyle::AnsiColor::BrightWhite))),
-        )
+        .literal(anstyle::Style::new().fg_color(Some(anstyle::Color::Ansi(anstyle::AnsiColor::BrightWhite))))
         .invalid(
             anstyle::Style::new()
                 .bold()
@@ -326,7 +315,5 @@ pub fn get_styles() -> clap::builder::Styles {
                 .bold()
                 .fg_color(Some(anstyle::Color::Ansi(anstyle::AnsiColor::Cyan))),
         )
-        .placeholder(
-            anstyle::Style::new().fg_color(Some(anstyle::Color::Ansi(anstyle::AnsiColor::White))),
-        )
+        .placeholder(anstyle::Style::new().fg_color(Some(anstyle::Color::Ansi(anstyle::AnsiColor::White))))
 }

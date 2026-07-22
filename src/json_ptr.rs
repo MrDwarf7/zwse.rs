@@ -5,8 +5,8 @@ use std::{fs, slice};
 
 use lz4_flex::decompress;
 
-use crate::prelude::*;
 use crate::MAGIC_HEADER;
+use crate::prelude::*;
 
 pub trait FillBuf<T, N> {
     fn fill_buf(&mut self, data: T) -> Self;
@@ -98,10 +98,7 @@ impl FileLocations {
         }
 
         let mut s = Self {
-            profile_dir: session_file
-                .parent()
-                .map(Path::to_path_buf)
-                .unwrap_or_default(),
+            profile_dir: session_file.parent().map(Path::to_path_buf).unwrap_or_default(),
             session_file,
             session_json: String::new(),
             json_buf_ptr: JsonBufPtr::default(),
@@ -214,8 +211,8 @@ impl FileLocations {
                 | ((compressed_data[2] as u32) << 16)
                 | ((compressed_data[3] as u32) << 24);
 
-        let decompressed_data = decompress(&compressed_data[4..], expected_size as usize)
-            .map_err(|_e| Error::DecompressionFailed)?;
+        let decompressed_data =
+            decompress(&compressed_data[4..], expected_size as usize).map_err(|_e| Error::DecompressionFailed)?;
 
         println!("Decompressing the data!");
 

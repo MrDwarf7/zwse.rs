@@ -14,8 +14,8 @@ use std::path::Path;
 
 use serde_json::Value;
 
-pub use crate::error::{Error, Result};
 use crate::cli::{Cli, VerbosityLevel};
+pub use crate::error::{Error, Result};
 use crate::extract::ExtractedData;
 use crate::json_ptr::FileLocations;
 // use crate::sorting::*;
@@ -48,8 +48,7 @@ fn main() -> Result<()> {
         }
     }
 
-    let data: Value =
-        serde_json::from_str(&file_locations.session_json).map_err(Error::JsonParseError)?;
+    let data: Value = serde_json::from_str(&file_locations.session_json).map_err(Error::JsonParseError)?;
 
     let ext_data = parse_session_data(data)?;
 
@@ -150,8 +149,8 @@ fn entry_data(tabs: Vec<Vec<Value>>) -> Result<Vec<Vec<Value>>> {
 
 // TODO: Add TabWriter (BurntSushi) to write to file - will space out better and make it easier to read
 fn export_urls(urls: Vec<ExtractedData>, output_file: impl AsRef<Path>) -> Result<()> {
-    let mut file = File::create(output_file)
-        .map_err(|e| Error::UrlExportError(format!("Could not create file: {}", e)))?;
+    let mut file =
+        File::create(output_file).map_err(|e| Error::UrlExportError(format!("Could not create file: {}", e)))?;
     for url in urls.iter() {
         writeln!(
             file,
