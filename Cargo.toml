@@ -34,8 +34,8 @@ macros  = [  ]
 # Windows exe icon + version info (release builds). Assets under assets/icon.ico.
 [package.metadata.winresource]
 OriginalFilename = "zwse.exe"
-FileDescription = "Export tabs and workspaces from a Zen Browser sessionstore.jsonlz4"
-LegalCopyright = "Copyright (c) Blake B. @github.com/MrDwarf7"
+FileDescription  = "Export tabs and workspaces from a Zen Browser sessionstore.jsonlz4"
+LegalCopyright   = "Copyright (c) Blake B. @github.com/MrDwarf7"
 #CompanyName = "https://github.com/MrDwarf7"
 
 [target.'cfg(windows)'.build-dependencies]
