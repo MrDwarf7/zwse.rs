@@ -22,7 +22,7 @@ runs:
   using: "composite"
   steps:
     - name: Checkout sources
-      uses: actions/checkout@v7
+      uses: ./.github/actions/checkout
 
     - name: Setup sccache
       uses: mozilla-actions/sccache-action@v0.0.9
