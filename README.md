@@ -1,5 +1,14 @@
+<!-- PROJECT LOGO / BANNER -->
 <p align="center">
-  <strong>zwse.rs</strong> — Export Zen Browser tabs and workspaces
+  <img src="assets/README-header.png" alt="zwse" width="100%">
+</p>
+
+<p align="center">
+  <img src="assets/icon-128.png" alt="zwse icon" width="64">
+</p>
+
+<p align="center">
+  <strong>zwse.rs</strong> -- Export Zen Browser tabs and workspaces
   <br>
   <a href="https://crates.io/crates/zwse"><img src="https://img.shields.io/crates/v/zwse" alt="crates.io"></a>
   <a href="https://github.com/MrDwarf7/zwse.rs/actions/workflows/build.yml"><img src="https://github.com/MrDwarf7/zwse.rs/actions/workflows/build.yml/badge.svg" alt="build"></a>
